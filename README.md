@@ -1,50 +1,56 @@
-# Welcome to your Expo app 👋
+# Jogo da Velha
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Um sistema de um Jogo da Velha simples feita em **Typescript** usando o framework **React Native** como parte da terceira atividade para a disciplina de **Programação para Dispositivos Móveis**.
 
-## Get started
+Membros:
+- Pedro Henrique Alexandre da Rocha
+- Vinicius Cavalcante Pequeno
+- Thiago dos Santos Araújo
 
-1. Install dependencies
+<!-- <div align="center">
+  <img src="jogo.png" width="300" alt="Jogo">
+</div> -->
 
+## Tecnologias Usadas
+
+<div align="center">
+
+![TypeScript](https://img.shields.io/badge/TypeScript-%23323330?style=for-the-badge&logo=typescript&logoColor=%233178C6)
+![React Native](https://img.shields.io/badge/React%20Native-%2320232a?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Expo](https://img.shields.io/badge/Expo-%23000000?style=for-the-badge&logo=expo&logoColor=%2361DAFB)
+![Vector Icons](https://img.shields.io/badge/Vector%20Icons-%23000000?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+
+</div>
+
+# Como Executar
+### Pré-requisitos
+
+- **Typescript**
+- **React Native**
+
+### Passos para execução
+
+1. **Clone o repositório**:
+   ```bash
+   git clone https://github.com/Pedroo722/Tic-Tac-Toe_PDM.git
+   cd Tic-Tac-Toe_PDM/
+   ```
+2. **Instale as dependências** (Caso necessário):
    ```bash
    npm install
    ```
+3. **Execute o aplicativo**:
+   
+   Caso tenha o dispositivo Android ou iOS com o aplicativo *Expo GO*, execute:
+     ```bash
+     npm start
+     ```
+    E aponte o a câmera, com o leitor de QR Code aberto, para o QR Code que aparecer no terminal.
 
-2. Start the app
+   Caso tenha o ambiente configurado para Android ou iOS, execute:
 
-   ```bash
-    npx expo start
-   ```
+   - Para **Android**:
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+     ```bash
+     npx react-native run-android
+     ```
