@@ -7,9 +7,11 @@ Membros:
 - Vinicius Cavalcante Pequeno
 - Thiago dos Santos Araújo
 
-<!-- <div align="center">
+## Aplicação
+
+<div align="center">
   <img src="jogo.png" width="300" alt="Jogo">
-</div> -->
+</div>
 
 ## Tecnologias Usadas
 
