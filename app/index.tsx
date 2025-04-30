@@ -1,106 +1,105 @@
-import React, { useState } from 'react';
-import { View, Text, Button, Alert, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
+import { Jogador } from './models/Jogador';
+import { JogadorAutomatizado } from './models/JogadorAutomatizado';
+import { Jogo } from './models/Jogo';
+import { Peca } from './models/Peca';
 
-// Função para verificar se há um vencedor
-const checkWinner = (board: (string | null)[]): string | null => {
-  const winningCombinations = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
+const jogo = new Jogo();
+const jogador1 = new Jogador("Você");
+const jogador2 = new JogadorAutomatizado("Bot");
+let partida = jogo.iniciarPartida(jogador1, jogador2);
 
-  for (let combination of winningCombinations) {
-    const [a, b, c] = combination;
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      return board[a]; // X or O
-    }
-  }
-  return null;
-};
+const Index = () => {
+  const [tabuleiro, setTabuleiro] = useState(partida.getTabuleiro());
+  const [vezJogador1, setVezJogador1] = useState(partida.getVezPrimeiro());
+  const [fimDeJogo, setFimDeJogo] = useState(false);
 
-export default function JodoDaVelha() {
-  const [board, setBoard] = useState<(string | null)[]>(Array(9).fill(null)); 
-  const [playerWins, setPlayerWins] = useState(0);
-  const [botWins, setBotWins] = useState(0);
-  const [drawCount, setDrawCount] = useState(0);
-  const [isXNext, setIsXNext] = useState(true);
-  const [status, setStatus] = useState('Vez do jogador: X');
+  const jogar = (linha: number, coluna: number) => {
+    if (fimDeJogo || tabuleiro[linha][coluna] !== Peca.VAZIO) return;
 
-  const makeMove = (index: number): void => { 
-    if (board[index] || checkWinner(board)) return; 
+    partida.joga(linha, coluna);
+    const novoTabuleiro = [...partida.getTabuleiro().map(l => [...l])];
+    setTabuleiro(novoTabuleiro);
+    setVezJogador1(partida.getVezPrimeiro());
 
-    const newBoard = [...board];
-    newBoard[index] = isXNext ? 'X' : 'O';
-    setBoard(newBoard);
-    setIsXNext(!isXNext);
-    setStatus(`Vez do jogador: ${isXNext ? 'O' : 'X'}`);
-
-    // Verifica se alguém ganhou
-    const winner = checkWinner(newBoard);
-    if (winner) {
-      setStatus(`Jogador ${winner} ganhou!`);
-      Alert.alert(`Jogador ${winner} ganhou!`);
-
-      if (winner == "X") {
-        console.log(winner + " ganhou!")
-        setPlayerWins(playerWins+1) 
-      }
-
-      if (winner == "O") {
-        console.log(winner + " ganhou!")
-        setBotWins(botWins+1)
-      }
+    const resultado = partida.verificaFim();
+    if (resultado !== 0) {
+      setFimDeJogo(true);
+      mostrarResultado(resultado);
     }
   };
 
-  const resetGame = (): void => {
-    setBoard(Array(9).fill(null));
-    setIsXNext(true);
-    setStatus('Vez do jogador: X');
+  const mostrarResultado = (resultado: number) => {
+    if (resultado === 1) {
+      jogador1.adicionaVitoria();
+      Alert.alert("Fim de jogo", "Você venceu!");
+    } else if (resultado === 2) {
+      jogador2.adicionaVitoria();
+      Alert.alert("Fim de jogo", "O bot venceu!");
+    } else {
+      Alert.alert("Empate", "Ninguém venceu!");
+    }
+  };
+
+  const jogarBot = () => {
+    const opcoes: [number, number][] = [];
+    tabuleiro.forEach((linha, i) => {
+      linha.forEach((casa, j) => {
+        if (casa === Peca.VAZIO) opcoes.push([i, j]);
+      });
+    });
+    if (opcoes.length === 0) return;
+
+    const [linha, coluna] = opcoes[Math.floor(Math.random() * opcoes.length)];
+    jogar(linha, coluna);
+  };
+
+  useEffect(() => {
+    if (!vezJogador1 && !fimDeJogo) {
+      setTimeout(jogarBot, 500);
+    }
+  }, [vezJogador1]);
+
+  const reiniciar = () => {
+    partida = jogo.iniciarPartida(jogador1, jogador2);
+    setTabuleiro(partida.getTabuleiro());
+    setVezJogador1(partida.getVezPrimeiro());
+    setFimDeJogo(false);
+  };
+
+  const getBotaoStyle = (casa: Peca) => {
+    switch (casa) {
+      case Peca.X:
+        return styles.botaoX; // Botão vermelho para "X"
+      case Peca.O:
+        return styles.botaoO; // Botão azul para "O"
+    }
   };
 
   return (
-    
     <View style={styles.container}>
-      <Text style={styles.title}>Jogo da Velha</Text>
-
-      {/* Placar de Vitória */}
-      <View style={styles.victoryPlate}>
-          <Text style={styles.text}>Jogador:</Text>
-          <View style={styles.textWinsBox}>
-            <Text style={styles.text}>{playerWins}</Text>
-          </View> 
-          <Text style={styles.text}>x</Text>
-          <Text style={styles.text}>Bot:</Text>
-          <View style={styles.textWinsBox}>
-            <Text style={styles.text}>{botWins}</Text>
-          </View>
-          <Text style={styles.text}></Text>
-      </View>
-    
-      {/* Tabuleiro */}
-      <View style={styles.board}>
-        {board.map((cell, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.cell, cell && styles[cell as 'X' | 'O']]} 
-            onPress={() => makeMove(index)} 
-          >
-            <Text style={styles.cellText}>{cell}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Botão de Reiniciar */}
-      <Text style={styles.status}>{status}</Text>
-      <Button title="Reiniciar" onPress={resetGame} />
+      <Text style={styles.titulo}>Jogo da Velha</Text>
+      <Text style={styles.info}>Vez de: {vezJogador1 ? "Você" : "Bot"}</Text>
+      {tabuleiro.map((linha, i) => (
+        <View key={i} style={styles.linha}>
+          {linha.map((casa, j) => (
+            <Pressable
+              key={j}
+              style={[styles.casa, getBotaoStyle(casa)]}
+              onPress={() => jogar(i, j)}
+              disabled={!vezJogador1 || fimDeJogo}
+            >
+              <Text style={styles.texto}>{casa}</Text>
+            </Pressable>
+          ))}
+        </View>
+      ))}
+      <Pressable style={styles.botao} onPress={reiniciar}>
+        <Text style={styles.textoBotao}>Reiniciar</Text>
+      </Pressable>
+      <Text style={styles.info}>Vitórias: Você {jogador1.getVitorias()} x {jogador2.getVitorias()} Bot</Text>
     </View>
-    
   );
 };
 
@@ -108,57 +107,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    alignItems: 'center'
   },
-  title: {
-    fontSize: 30,
+  titulo: {
+    fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10
   },
-  board: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    width: 300,
-    height: 300,
-    marginBottom: 20,
+  info: {
+    fontSize: 18,
+    marginVertical: 4
   },
-  cell: {
-    width: '33.33%',
-    height: '33.33%',
-    borderWidth: 1,
+  linha: {
+    flexDirection: 'row'
+  },
+  casa: {
+    width: 80,
+    height: 80,
+    backgroundColor: '#ddd',
     justifyContent: 'center',
     alignItems: 'center',
+    margin: 4,
+    borderRadius: 8
   },
-  X: {
-    backgroundColor: 'lightblue',
+  texto: { fontSize: 32, fontWeight: 'bold' },
+  botao: {
+    marginTop: 20,
+    padding: 10,
+    borderRadius: 6,
+    backgroundColor: '#2196F3',
   },
-  O: {
+  botaoX: {
     backgroundColor: 'lightcoral',
   },
-  cellText: {
-    fontSize: 50,
-    fontWeight: 'bold',
+  botaoO: {
+    backgroundColor: 'lightblue',
   },
-  status: {
-    fontSize: 18,
-    marginBottom: 20,
-  },
-  text: {
-    color: "#B0E0E6", 
-    fontSize: 20,
-    marginLeft: 10,
-    marginRight: 10,
-  },
-  victoryPlate: {
-    flexDirection: 'row',
-    backgroundColor: "#808080",
-    marginBottom: 30,
-    height: 35,
-  },
-  textWinsBox: {
-    backgroundColor: "#FFFFFF"
-  },
+  textoBotao: { color: 'white', fontWeight: 'bold' }
 });
 
-
+export default Index;
