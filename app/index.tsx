@@ -14,7 +14,7 @@ const Index = () => {
   const [tabuleiro, setTabuleiro] = useState(partida.getTabuleiro());
   const [vezJogador1, setVezJogador1] = useState(partida.getVezPrimeiro());
   const [fimDeJogo, setFimDeJogo] = useState(false);
-
+  
   const jogar = (linha: number, coluna: number) => {
     if (fimDeJogo || tabuleiro[linha][coluna] !== Peca.VAZIO) return;
 
@@ -32,14 +32,17 @@ const Index = () => {
 
   const mostrarResultado = (resultado: number) => {
     if (resultado === 1) {
-      jogador1.adicionaVitoria();
+      jogador1.adicionaVitoria();  
       Alert.alert("Fim de jogo", "Você venceu!");
     } else if (resultado === 2) {
-      jogador2.adicionaVitoria();
+      jogador2.adicionaVitoria();  
       Alert.alert("Fim de jogo", "O bot venceu!");
     } else {
       Alert.alert("Empate", "Ninguém venceu!");
     }
+    setTimeout(() => {
+      reiniciarPartida();  
+    }, 2000);  
   };
 
   const jogarBot = () => {
@@ -62,11 +65,29 @@ const Index = () => {
   }, [vezJogador1]);
 
   const reiniciar = () => {
+    // Zera as vitórias e derrotas
+    jogador1.resetarEstatisticas();
+    jogador2.resetarEstatisticas();
+  
+    // Reinicia a partida
     partida = jogo.iniciarPartida(jogador1, jogador2);
+  
+    // Atualiza o estado do tabuleiro e do turno
     setTabuleiro(partida.getTabuleiro());
     setVezJogador1(partida.getVezPrimeiro());
     setFimDeJogo(false);
   };
+
+  const reiniciarPartida = () => {
+    // Reinicia a partida, mas mantém as vitórias e derrotas
+    partida = jogo.iniciarPartida(jogador1, jogador2);
+    
+    // Atualiza o estado do tabuleiro e do turno
+    setTabuleiro(partida.getTabuleiro());
+    setVezJogador1(partida.getVezPrimeiro());
+    setFimDeJogo(false);
+  };
+  
 
   const getBotaoStyle = (casa: Peca) => {
     switch (casa) {

@@ -6,6 +6,10 @@ export class Jogador {
         this.nome = nome;
     }
 
+    resetarEstatisticas() {
+        this.vitorias = 0;
+    }
+
     getNome(): string {
         return this.nome;
     }
